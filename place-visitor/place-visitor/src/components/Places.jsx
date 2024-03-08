@@ -9,6 +9,7 @@ export default function Places({ title, places, fallbackText, onSelectPlace }) {
           {places.map((place) => (
             <li key={place.id} className="place-item">
               <button onClick={() => onSelectPlace(place)}>
+                {/* in src we have put http syntax so that it supports backend images too */}
                 <img src={`http://localhost:3000/${place.image.src}`} alt={place.image.alt} />
                 <h3>{place.title}</h3>
               </button>
