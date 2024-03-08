@@ -12,13 +12,21 @@ export default function AvailablePlaces({ onSelectPlace }) {
   const [availablePlaces, setAvailablePlaces] = useState([]);
   // fetch is provided directly by browser and it is used to send http request on site.
   useEffect(() => {
-    fetch("http://localhost:3000/places")
-      .then((response) => {
-        return response.json();
-      })
-      .then((resData) => {
-        setAvailablePlaces(resData.places);
-      });
+    async function fetchPlaces() {
+      const response = await fetch("http://localhost:3000/places");
+      const resData = await response.json();
+      setAvailablePlaces(resData.places);
+    }
+
+    //   fetch("http://localhost:3000/places")
+    //     .then((response) => {
+    //       return response.json();
+    //     })
+    //     .then((resData) => {
+    //       setAvailablePlaces(resData.places);
+    //     });
+
+    fetchPlaces();
   }, []);
 
   //  for above code we need to use useEffect in order to avoid the conflict of infinite loop which can be generated.
