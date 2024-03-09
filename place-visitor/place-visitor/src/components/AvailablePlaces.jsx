@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 
 import Places from "./Places.jsx";
 import Error from "./Error.jsx";
+import { sortPlacesByDistance } from "../loc.js";
 
 // In React use of localStorage to store and retrieve data in the browser. Use of localStorage.getItem() to retrieve stored data:
 
@@ -24,16 +25,29 @@ export default function AvailablePlaces({ onSelectPlace }) {
         if (!response.ok) {
           // const error = new Error("Failed to fetch");
           // throw error;
-
           throw new Error("Failed to fetch");
         }
-        setAvailablePlaces(resData.places);
+        // to get current location of the user.
+        navigator.geolocation.getCurrentPosition((position) => {
+          const sortedPlaces = sortPlacesByDistance(
+            resData.places,
+            position.coords.latitude,
+            position.coords.longitude
+          );
+
+          setAvailablePlaces(sortedPlaces);
+          setIsFetching(false);
+        });
+
         //success : 200 code   failure : 400, 500
       } catch (error) {
-        setError({message: error.message || "Could not find places please try again later"});
+        setError({
+          message:
+            error.message || "Could not find places please try again later",
+        });
       }
 
-      setIsFetching(false);
+      
     }
 
     //   fetch("http://localhost:3000/places")
@@ -47,8 +61,8 @@ export default function AvailablePlaces({ onSelectPlace }) {
     fetchPlaces();
   }, []);
 
-  if(error) {
-    return <Error title="An error occured!" message={error.message} />
+  if (error) {
+    return <Error title="An error occured!" message={error.message} />;
   }
   //  for above code we need to use useEffect in order to avoid the conflict of infinite loop which can be generated.
   return (
