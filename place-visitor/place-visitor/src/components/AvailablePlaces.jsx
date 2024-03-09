@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Places from "./Places.jsx";
 import Error from "./Error.jsx";
 import { sortPlacesByDistance } from "../loc.js";
-
+import {fetchAvailablePlaces} from '../http.js';
 // In React use of localStorage to store and retrieve data in the browser. Use of localStorage.getItem() to retrieve stored data:
 
 // async await is not implemented for react components.
@@ -19,18 +19,11 @@ export default function AvailablePlaces({ onSelectPlace }) {
     async function fetchPlaces() {
       setIsFetching(true);
       try {
-        const response = await fetch("http://localhost:3000/places");
-        const resData = await response.json();
-
-        if (!response.ok) {
-          // const error = new Error("Failed to fetch");
-          // throw error;
-          throw new Error("Failed to fetch");
-        }
+       const places = await fetchAvailablePlaces();
         // to get current location of the user.
         navigator.geolocation.getCurrentPosition((position) => {
           const sortedPlaces = sortPlacesByDistance(
-            resData.places,
+            places,
             position.coords.latitude,
             position.coords.longitude
           );
