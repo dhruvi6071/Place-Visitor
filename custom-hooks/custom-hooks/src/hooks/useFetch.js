@@ -1,19 +1,29 @@
 //functions that starts with use are considered to be a hook.
-import { useEffect } from "react";
-function useFetch() {
+import { useEffect, useState} from "react";
+export function useFetch(fetchFN) {
+  const [isFetching, setIsFetching] = useState();
+  const [error, setError] = useState();
+  const[fetchData, setFetchData] = useState();
+
   useEffect(() => {
-    async function fetchPlaces() {
+    async function fetchData() {
       setIsFetching(true);
       try {
-        const places = await fetchUserPlaces();
-        setUserPlaces(places);
+        const places = await fetchFN();
+        setFetchData(places);
       } catch (error) {
-        setError({ message: error.message || "Failed to fetch user places." });
+        setError({ message: error.message || "Failed to fetch data." });
       }
 
       setIsFetching(false);
     }
 
-    fetchPlaces();
-  }, []);
+    fetchData();
+  }, [fetchFN]);
+
+  return {
+    isFetching,
+    fetchData,
+    error
+  }
 }
